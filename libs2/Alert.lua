@@ -7,9 +7,7 @@ function toText(appName, windowList, selectedIndex)
             result = result .. '\n    '
         end
 
-        local title = value:title()
-
-        result = result .. title
+        result = result .. value:title()
     end
 
     return result
