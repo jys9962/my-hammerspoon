@@ -1,7 +1,7 @@
 function toText(appName, windowList, selectedIndex)
     local result = '    [ ' .. appName .. ']    \n'
     for index, value in ipairs(windowList) do
-        if (index == selectedIndex) then
+        if #windowList > 1 and index == selectedIndex then
             result = result .. '\nV '
         else
             result = result .. '\n    '
