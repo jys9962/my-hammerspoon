@@ -13,6 +13,9 @@ function OptionKey:register(key, appName, launchName)
     hs.hotkey.bind({ 'option' }, key, function()
         controller:next(appName, launchName)
     end)
+    hs.hotkey.bind({ 'option', 'shift' }, key, function()
+        controller:before(appName, launchName)
+    end)
 end
 
 return OptionKey

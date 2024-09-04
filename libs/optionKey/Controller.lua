@@ -50,6 +50,30 @@ function Controller:next(appName, launchName)
     end
 end
 
+function Controller:before(appName, launchName)
+    local windowList = self:getSortedWindows(appName)
+
+    -- 앱이 실행되지 않은 상태
+    if windowList == nil or #windowList == 0 then
+        return
+    end
+
+    -- 알트탭 시작
+    if (self.data.currentAppName ~= appName) then
+        return
+    end
+
+    -- 다음탭 이동
+    local currentWindow = hs.window.focusedWindow()
+    for index, aWindow in ipairs(windowList) do
+        if (aWindow:id() == currentWindow:id()) then
+            local selectedIndex = (index - 1) == 0 and #windowList or (index - 1)
+            windowList[selectedIndex]:focus()
+            TabAlert.show(appName, windowList, selectedIndex)
+        end
+    end
+end
+
 function Controller:getSortedWindows(name)
     return WindowFilter.new(name)
                        :setSortOrder(WindowFilter.sortByCreated)
