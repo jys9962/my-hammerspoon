@@ -3,7 +3,10 @@ local callbackList = {}
 
 ctrlWatcher = hs.eventtap.new({ hs.eventtap.event.types.flagsChanged }, function(event)
     local flags = event:getFlags()
-    if not flags.alt then
+    for i, v in pairs(flags) do
+        print(i, v)
+    end
+    if not flags.alt and not flags.cmd and not flags.ctrl then
         for index, value in ipairs(callbackList) do
             value()
         end

@@ -1,6 +1,6 @@
 local WindowFilter = require('hs.window.filter')
 local EventWatcher = require('libs/util/EventWatcher')
-local TabAlert = require('libs/winTab/Alert')
+local TabAlert = require('libs/util/Alert')
 
 Controller = {}
 Controller.__index = Controller
@@ -20,9 +20,7 @@ function Controller.new()
     return self
 end
 
-function Controller:clickAppKey(appName, launchName)
-    --print(hs.window.focusedWindow():application():name())
-
+function Controller:next(appName, launchName)
     local windowList = self:getSortedWindows(appName)
 
     -- 앱이 실행되지 않은 상태

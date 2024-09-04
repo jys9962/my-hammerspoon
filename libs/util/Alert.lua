@@ -39,12 +39,14 @@ function repeatStr(str, length)
 end
 
 function toText(appName, windowList, selectedIndex)
-    local fullLength = 90
-    local titleSize = utf8Len(appName)
-    local leftPad = (fullLength - titleSize) // 2
-    local rightPad = fullLength - titleSize - leftPad
-    local result = repeatStr(' ', leftPad) .. '[[ ' .. appName .. ' ]]' .. repeatStr(' ', rightPad) .. '\n'
-
+    local result = ''
+    if appName ~= nil then
+        local fullLength = 90
+        local titleSize = utf8Len(appName)
+        local leftPad = (fullLength - titleSize) // 2
+        local rightPad = fullLength - titleSize - leftPad
+        result = repeatStr(' ', leftPad) .. '[[ ' .. appName .. ' ]]' .. repeatStr(' ', rightPad) .. '\n'
+    end
     for index, value in ipairs(windowList) do
         if index == selectedIndex then
             result = result .. '\n●  '
