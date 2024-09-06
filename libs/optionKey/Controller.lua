@@ -1,4 +1,5 @@
 local tabAlert = require('libs/util/TabAlert')
+--local AltTab = require('libs/util/AltTab')
 
 local function getTabName(appName)
     return 'winKey-' .. appName
@@ -12,8 +13,10 @@ end
 
 local function initOrNext(appName, launchName)
     local tabName = getTabName(appName)
+    --local currentTabName = AltTab.getTabName()
     local currentTabName = tabAlert.getTabName()
     if tabName == currentTabName then
+        --AltTab.selectNextWindow()
         tabAlert.nextTab()
         return ;
     end
@@ -25,17 +28,20 @@ local function initOrNext(appName, launchName)
     end
 
     local title = '[[' .. appName .. ']]'
+    --    AltTab.startSwitcher(tabName, windowList, 1)
     tabAlert.startTab(tabName, title, windowList, 1)
 end
 
 local function before(appName)
     local tabName = getTabName(appName)
+    --    local currentTabName = AltTab.getTabName()
     local currentTabName = tabAlert.getTabName()
 
     if (tabName ~= currentTabName) then
         return ;
     end
 
+    --    AltTab.selectPrevWindow()
     tabAlert.beforeTab()
 end
 
