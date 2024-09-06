@@ -1,5 +1,4 @@
-local EventWatcher = require('libs/util/EventWatcher')
-watcher = EventWatcher.new()
+local watcher = require('libs/util/EventWatcher')
 
 local switcher = {
     tabName = nil,
@@ -133,7 +132,7 @@ local function selectPrevWindow()
     showDrawings()
 end
 
-watcher:listen(function()
+watcher.listen(function()
     if switcher.tabName == nil then
         return ;
     end

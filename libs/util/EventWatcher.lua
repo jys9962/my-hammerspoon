@@ -1,25 +1,21 @@
-EventWatcher = {}
-local callbackList = {}
+local data = {
+    list = {}
+}
 
-ctrlWatcher = hs.eventtap.new({ hs.eventtap.event.types.flagsChanged }, function(event)
+local ctrlWatcher = hs.eventtap.new({ hs.eventtap.event.types.flagsChanged }, function(event)
     local flags = event:getFlags()
     if not flags.alt and not flags.cmd and not flags.ctrl then
-        for index, value in ipairs(callbackList) do
+        for index, value in ipairs(data.list) do
             value()
         end
     end
 end)
 
-EventWatcher.new = function()
-    local obj = {}
-    obj.callback = nil
-
-    obj.listen = function(self, callback)
-        table.insert(callbackList, callback)
-        ctrlWatcher:start()
-    end
-
-    return obj
+local function listen(callback)
+    table.insert(data.list, callback)
+    ctrlWatcher:start()
 end
 
-return EventWatcher
+return {
+    listen = listen
+}

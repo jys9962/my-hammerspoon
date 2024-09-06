@@ -1,6 +1,5 @@
-local EventWatcher = require('libs/util/EventWatcher')
+local watcher = require('libs/util/EventWatcher')
 require('libs/util/StringUtil')
-watcher = EventWatcher.new()
 
 local data = {
     tabName = nil,
@@ -24,6 +23,35 @@ local function getTabName()
     return data.tabName
 end
 
+local function getMessage()
+    title = data.title
+    windowList = data.windowList
+    selectedIndex = data.currentIndex
+
+    local result = '----------------------------------------------------------------\n'
+    if title ~= nil then
+        local fullLength = 90
+        local titleSize = utf8Len(title)
+        local leftPad = (fullLength - titleSize) // 2
+        local rightPad = fullLength - titleSize - leftPad
+        result = result .. repeatStr(' ', leftPad) .. data.title .. repeatStr(' ', rightPad) .. '\n'
+    end
+    for index, value in ipairs(windowList) do
+        if index == selectedIndex then
+            result = result .. '\n ●  '
+        else
+            result = result .. '\n ○  '
+        end
+
+        local title = value:title()
+        --local indexedAppName = appName .. ' - (' .. index .. ')'
+        result = result .. truncateString(title, 50) -- result .. truncateString(title ~= '' and title or indexedAppName, 50)
+    end
+
+    result = result .. '\n\n----------------------------------------------------------------'
+    return result
+end
+
 local function showAlert()
     hs.alert.closeAll()
     local message = getMessage()
@@ -42,22 +70,10 @@ local function showAlert()
     })
 end
 
-watcher:listen(function()
-    if data.tabName == nil then
-        return ;
-    end
-
-    focusCurrentIndex()
-    init()
-    hs.alert.closeAll()
-end)
-
-function getMessage()
+local function getMessage()
     title = data.title
     windowList = data.windowList
     selectedIndex = data.currentIndex
-
-    print(title, #windowList, selectedIndex)
 
     local result = '----------------------------------------------------------------\n'
     if title ~= nil then
@@ -101,6 +117,16 @@ local function beforeTab()
     data.currentIndex = (data.currentIndex - 1) == 0 and #data.windowList or (data.currentIndex - 1)
     showAlert()
 end
+
+watcher.listen(function()
+    if data.tabName == nil then
+        return ;
+    end
+
+    focusCurrentIndex()
+    init()
+    hs.alert.closeAll()
+end)
 
 return {
     toMessage = getMessage,

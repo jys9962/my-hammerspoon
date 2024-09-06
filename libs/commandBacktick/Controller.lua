@@ -1,4 +1,5 @@
 local tabAlert = require('libs/util/TabAlert')
+local ArrayUtil = require('libs/util/ArrayUtil')
 
 local function getTabName(appName)
     return 'winKey-' .. appName
@@ -20,7 +21,12 @@ local function getCurrentAppName()
 end
 
 local function initOrNext()
-    local appName = getCurrentAppName()
+    local currentWindow = hs.window.focusedWindow()
+    if (currentWindow == nil) then
+        return nil;
+    end
+
+    local appName = currentWindow:application():name()
     if appName == nil then
         return ;
     end
@@ -34,26 +40,42 @@ local function initOrNext()
 
     local windowList = getSortedWindows(appName)
     local title = '[[' .. appName .. ']]'
-    tabAlert.startTab(tabName, title, windowList, 1)
+    local currentIndex = ArrayUtil.findIndex(windowList, function(aWindow, i)
+        return aWindow:id() == currentWindow:id()
+    end)
+    tabAlert.startTab(tabName, title, windowList, currentIndex)
+    tabAlert.nextTab()
 end
 
-local function before()
-    local appName = getCurrentAppName()
+local function initOrBefore()
+    local currentWindow = hs.window.focusedWindow()
+    if (currentWindow == nil) then
+        return nil;
+    end
+
+    local appName = currentWindow:application():name()
     if appName == nil then
         return ;
     end
 
     local tabName = getTabName(appName)
     local currentTabName = tabAlert.getTabName()
-
-    if (tabName ~= currentTabName) then
+    if tabName == currentTabName then
+        tabAlert.beforeTab()
         return ;
     end
 
+    local windowList = getSortedWindows(appName)
+    local title = '[[' .. appName .. ']]'
+    local currentIndex = ArrayUtil.findIndex(windowList, function(aWindow, i)
+        return aWindow:id() == currentWindow:id()
+    end)
+
+    tabAlert.startTab(tabName, title, windowList, currentIndex)
     tabAlert.beforeTab()
 end
 
 return {
     initOrNext = initOrNext,
-    before = before,
+    initOrBefore = initOrBefore,
 }
