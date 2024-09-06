@@ -1,5 +1,4 @@
-CtrlScroll = {}
-CtrlScroll.init = function(mods, speed)
+local function init(mods, speed)
     local function scrollUp()
         local scrollEvent = hs.eventtap.event.newScrollEvent({ 0, -speed }, {}, "line")
         scrollEvent:post()
@@ -14,4 +13,6 @@ CtrlScroll.init = function(mods, speed)
     hs.hotkey.bind(mods, "down", scrollDown, nil, scrollDown)
 end
 
-return CtrlScroll
+return {
+    init = init
+}

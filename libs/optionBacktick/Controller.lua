@@ -1,17 +1,17 @@
 local tabAlert = require('libs/util/TabAlert')
 
-local function getTabName(appName)
-    return 'winKey-' .. appName
+local function getTabName()
+    return 'before'
 end
 
-local function getSortedWindows(name)
-    return hs.window.filter.new(name)
-             :setSortOrder(hs.window.filter.sortByCreated)
+local function getSortedWindows()
+    return hs.window.filter.new()
+             :setSortOrder(hs.window.filter.sortByFocusedLast)
              :getWindows()
 end
 
-local function initOrNext(appName, launchName)
-    local tabName = getTabName(appName)
+local function initOrNext()
+    local tabName = getTabName()
     local currentTabName = tabAlert.getTabName()
     if tabName == currentTabName then
         tabAlert.nextTab()
@@ -24,12 +24,12 @@ local function initOrNext(appName, launchName)
         return ;
     end
 
-    local title = '[[' .. appName .. ']]'
+    local title = ''
     tabAlert.startTab(tabName, title, windowList, 1)
 end
 
-local function before(appName)
-    local tabName = getTabName(appName)
+local function before()
+    local tabName = getTabName()
     local currentTabName = tabAlert.getTabName()
 
     if (tabName ~= currentTabName) then

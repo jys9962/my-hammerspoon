@@ -1,21 +1,14 @@
-local Controller = require('libs/commandBacktick/Controller')
+local controller = require('libs/commandBacktick/Controller')
 
-CommandBacktick = {}
-CommandBacktick.__index = CommandBacktick
-function CommandBacktick.new()
-    local self = setmetatable({}, CommandBacktick)
-    self.controller = Controller.new()
-    return self
-end
-
-function CommandBacktick:init()
+function init()
     hs.hotkey.bind({ 'command' }, '`', function()
-        self.controller:next()
+        controller.initOrNext()
     end)
     hs.hotkey.bind({ 'command', 'shift' }, '`', function()
-        self.controller:before()
+        controller.before()
     end)
-
 end
 
-return CommandBacktick
+return {
+    init = init
+}

@@ -1,21 +1,15 @@
-local Controller = require('libs/optionKey/Controller')
+local controller = require('libs/optionKey/Controller')
 
-OptionKey = {}
-OptionKey.__index = OptionKey
-function OptionKey.new()
-    local self = setmetatable({}, OptionKey)
-    self.controller = Controller.new()
-    return self
-end
-
-function OptionKey:register(key, appName, launchName)
-    local controller = self.controller
+local function register(key, appName, launchName)
     hs.hotkey.bind({ 'option' }, key, function()
-        controller:next(appName, launchName)
+        controller.initOrNext(appName, launchName)
     end)
+
     hs.hotkey.bind({ 'option', 'shift' }, key, function()
-        controller:before(appName, launchName)
+        controller.before(appName, launchName)
     end)
 end
 
-return OptionKey
+return {
+    register = register
+}

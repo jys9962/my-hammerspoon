@@ -1,95 +1,59 @@
-local WindowFilter = require('hs.window.filter')
-local EventWatcher = require('libs/util/EventWatcher')
-local TabAlert = require('libs/util/Alert')
-local WindowUtil = require('libs/util/WindowUtil')
-local ArrayUtil = require('libs/util/ArrayUtil')
+local tabAlert = require('libs/util/TabAlert')
 
-Controller = {}
-Controller.__index = Controller
-function Controller.new()
-    local self = setmetatable({}, Controller)
-    self.data = {
-        isRunning = false,
-        currentIndex = nil,
-        windowList = {}
-    }
-    watcher = EventWatcher.new()
-    watcher:listen(function()
-        self.data.isRunning = false
-        self.data.currentIndex = nil
-        self.data.windowList = {}
-        TabAlert.close()
-    end)
-
-    return self
+local function getTabName(appName)
+    return 'winKey-' .. appName
 end
 
-function Controller:setRunning()
-    local currentWindow = hs.window.focusedWindow()
-    if (currentWindow == nil) then
-        print('not running app')
-        return false;
+local function getSortedWindows(name)
+    return hs.window.filter.new(name)
+             :setSortOrder(hs.window.filter.sortByCreated)
+             :getWindows()
+end
+
+local function getCurrentAppName()
+    local theWindow = hs.window.focusedWindow()
+    if (theWindow == nil) then
+        return nil;
     end
-    local appName = currentWindow:application():name()
-    local windowList = WindowUtil.getAllWindow(appName)
-    self.data.isRunning = true
-    self.data.windowList = windowList
-    self.data.currentIndex = ArrayUtil.findIndex(windowList, function(aWindow, i)
-        return aWindow:id() == currentWindow:id()
-    end)
+
+    return theWindow:application():name()
 end
 
-function Controller:next()
-    if not self.data.isRunning then
-        local currentWindow = hs.window.focusedWindow()
-        if (currentWindow == nil) then
-            print('not running app')
-            return ;
-        end
-        local appName = currentWindow:application():name()
-        local windowList = WindowUtil.getAllWindow(appName)
-        self.data.isRunning = true
-        self.data.windowList = windowList
-        self.data.currentIndex = ArrayUtil.findIndex(windowList, function(aWindow, i)
-            return aWindow:id() == currentWindow:id()
-        end)
-
-        self:next()
-    else
-        self.data.currentIndex = (self.data.currentIndex % #self.data.windowList) + 1
-
-        print(self.data.currentIndex)
-
-        local targetWindow = self.data.windowList[self.data.currentIndex]
-        targetWindow:focus()
-        TabAlert.show(targetWindow:application():name(), self.data.windowList, self.data.currentIndex)
+local function initOrNext()
+    local appName = getCurrentAppName()
+    if appName == nil then
+        return ;
     end
-end
 
-function Controller:before()
-    if not self.data.isRunning then
-        local currentWindow = hs.window.focusedWindow()
-        if (currentWindow == nil) then
-            print('not running app')
-            return ;
-        end
-        local appName = currentWindow:application():name()
-        local windowList = WindowUtil.getAllWindow(appName)
-        self.data.isRunning = true
-        self.data.windowList = windowList
-        self.data.currentIndex = ArrayUtil.findIndex(windowList, function(aWindow, i)
-            return aWindow:id() == currentWindow:id()
-        end)
-
-        self:before()
-    else
-        self.data.currentIndex = (self.data.currentIndex - 1) == 0 and #self.data.windowList or (self.data.currentIndex - 1)
-        local targetWindow = self.data.windowList[self.data.currentIndex]
-
-        targetWindow:focus()
-        TabAlert.show(targetWindow:application():name(), self.data.windowList, self.data.currentIndex)
-
+    local tabName = getTabName(appName)
+    local currentTabName = tabAlert.getTabName()
+    if tabName == currentTabName then
+        tabAlert.nextTab()
+        return ;
     end
+
+    local windowList = getSortedWindows(appName)
+    local title = '[[' .. appName .. ']]'
+    tabAlert.startTab(tabName, title, windowList, 1)
 end
 
-return Controller
+local function before()
+    local appName = getCurrentAppName()
+    if appName == nil then
+        return ;
+    end
+
+    local tabName = getTabName(appName)
+    local currentTabName = tabAlert.getTabName()
+
+    if (tabName ~= currentTabName) then
+        return ;
+    end
+
+    tabAlert.beforeTab()
+end
+
+return {
+    initOrNext = initOrNext,
+    before = before,
+}
