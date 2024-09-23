@@ -26,6 +26,7 @@ local function initOrNext()
 
     local title = ''
     tabAlert.startTab(tabName, title, windowList, 1)
+    tabAlert.nextTab()
 end
 
 local function before()

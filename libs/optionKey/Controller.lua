@@ -27,7 +27,8 @@ local function initOrNext(appName, launchName)
         return ;
     end
 
-    local title = '[[' .. appName .. ']]'
+    local title = appName
+    --local title = '[[ ' .. appName .. ' ]]'
     --    AltTab.startSwitcher(tabName, windowList, 1)
     tabAlert.startTab(tabName, title, windowList, 1)
 end

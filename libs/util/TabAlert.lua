@@ -28,9 +28,9 @@ local function getMessage()
     windowList = data.windowList
     selectedIndex = data.currentIndex
 
-    local result = '----------------------------------------------------------------\n'
+    local result = '_______________________________________________________________\n\n'
     if title ~= nil then
-        local fullLength = 90
+        local fullLength = 120
         local titleSize = utf8Len(title)
         local leftPad = (fullLength - titleSize) // 2
         local rightPad = fullLength - titleSize - leftPad
@@ -38,9 +38,9 @@ local function getMessage()
     end
     for index, value in ipairs(windowList) do
         if index == selectedIndex then
-            result = result .. '\n ●  '
+            result = result .. '\n  ●  '
         else
-            result = result .. '\n ○  '
+            result = result .. '\n  ○  '
         end
 
         local title = value:title()
@@ -48,7 +48,7 @@ local function getMessage()
         result = result .. truncateString(title, 50) -- result .. truncateString(title ~= '' and title or indexedAppName, 50)
     end
 
-    result = result .. '\n\n----------------------------------------------------------------'
+    result = result .. '\n\n_______________________________________________________________\n'
     return result
 end
 
@@ -58,16 +58,16 @@ local function showAlert()
     hs.alert.show(message, {
         strokeWidth = 0,
         strokeColor = { red = 0.2, green = 0.4, blue = 0.6, alpha = 1 },
-        fillColor = { red = 0.27, green = 0.47, blue = 0.7, alpha = 1 },
+        fillColor = { red = 0.12, green = 0.12, blue = 0.12, alpha = 1 },
         textColor = { white = 1 },
         textFont = ".AppleSystemUIFont",
-        textSize = 18,
+        textSize = 20,
         radius = 12,
         atScreenEdge = 0,
         fadeInDuration = 0,
         fadeOutDuration = 0,
         padding = 0
-    })
+    }, 3600)
 end
 
 local function getMessage()
