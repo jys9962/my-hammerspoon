@@ -5,8 +5,8 @@ local function init(key, inputEnglish, inputKorean)
                 and inputKorean
                 or inputEnglish
         local alertText = next == inputEnglish
-                and 'ENG'
-                or 'KR'
+                and 'ABC'
+                or '가나다'
 
         hs.keycodes.currentSourceID(next)
         hs.alert.closeAll()

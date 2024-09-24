@@ -6,7 +6,7 @@ local function getTabName(appName)
 end
 
 local function getSortedWindows(name)
-    return hs.window.filter.new(name)
+    return hs.window.filter.new(false):setAppFilter(name, {})
              :setSortOrder(hs.window.filter.sortByCreated)
              :getWindows()
 end
