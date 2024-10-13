@@ -12,7 +12,7 @@ local function getWindowList(app)
     for _, t in ipairs(byStorage) do
         for _, j in ipairs(byApp) do
             if j:id() == t:id() then
-                table.insert(result, t)
+                table.insert(result, j)
                 break
             end
         end
