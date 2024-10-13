@@ -1,14 +1,12 @@
 local tabAlert = require('libs/util/TabAlert')
---local AltTab = require('libs/util/AltTab')
+local windows = require('libs/util/Window')
 
 local function getTabName(appName)
     return 'winKey-' .. appName
 end
 
 local function getSortedWindows(name)
-    return hs.window.filter.new(false):setAppFilter(name, {})
-             :setSortOrder(hs.window.filter.sortByCreated)
-             :getWindows()
+    return windows.getList(name)
 end
 
 local function initOrNext(appName, launchName)

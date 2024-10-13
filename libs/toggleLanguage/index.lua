@@ -8,7 +8,6 @@ local function init(key, inputEnglish, inputKorean)
                 and 'ABC'
                 or '가나다'
 
-        hs.keycodes.currentSourceID(next)
         hs.alert.closeAll()
         hs.alert.show(alertText, {
             fillColor = { white = 0 },
@@ -21,6 +20,7 @@ local function init(key, inputEnglish, inputKorean)
             fadeOutDuration = 0,
             padding = 20
         })
+        hs.keycodes.currentSourceID(next)
     end)
 end
 

@@ -9,6 +9,7 @@ local function register(key, appName, launchName)
         controller.before(appName, launchName)
     end
 
+
     hs.hotkey.bind({ 'option' }, key, initOrNext, nil, initOrNext)
     hs.hotkey.bind({ 'option', 'shift' }, key, before, nil, before)
 end
