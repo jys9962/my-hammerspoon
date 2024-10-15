@@ -47,6 +47,7 @@ local function getList(appName)
     end
 
     windowData.apps[appName] = getWindowList(app)
+
     return windowData.apps[appName]
 end
 

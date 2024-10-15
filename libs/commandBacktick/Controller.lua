@@ -1,4 +1,5 @@
 local tabAlert = require('libs/util/TabAlert')
+local windows = require('libs/util/Window')
 local ArrayUtil = require('libs/util/ArrayUtil')
 
 local function getTabName(appName)
@@ -6,9 +7,7 @@ local function getTabName(appName)
 end
 
 local function getSortedWindows(name)
-    return hs.window.filter.new(false):setAppFilter(name, {})
-             :setSortOrder(hs.window.filter.sortByCreated)
-             :getWindows()
+    return windows.getList(name)
 end
 
 local function getCurrentAppName()
