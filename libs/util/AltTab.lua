@@ -1,4 +1,4 @@
-local watcher = require('libs/util/EventWatcher')
+local watcher = require('libs.util.EventWatcher')
 
 local switcher = {
     tabName = nil,

@@ -1,6 +1,6 @@
-local tabAlert = require('libs/util/TabAlert')
-local windows = require('libs/util/Window')
-local ArrayUtil = require('libs/util/ArrayUtil')
+local tabAlert = require('libs.util.TabAlert')
+local windows = require('libs.util.Window')
+local Arr = require('libs.util.ArrayUtil')
 
 local function getTabName(appName)
     return 'winKey-' .. appName
@@ -39,7 +39,7 @@ local function initOrNext()
 
     local windowList = getSortedWindows(appName)
     local title = '[[' .. appName .. ']]'
-    local currentIndex = ArrayUtil.findIndex(windowList, function(aWindow, i)
+    local currentIndex = Arr.findIndex(windowList, function(aWindow, i)
         return aWindow:id() == currentWindow:id()
     end)
     tabAlert.startTab(tabName, title, windowList, currentIndex)
@@ -66,7 +66,7 @@ local function initOrBefore()
 
     local windowList = getSortedWindows(appName)
     local title = '[[' .. appName .. ']]'
-    local currentIndex = ArrayUtil.findIndex(windowList, function(aWindow, i)
+    local currentIndex = Arr.findIndex(windowList, function(aWindow, i)
         return aWindow:id() == currentWindow:id()
     end)
 

@@ -1,4 +1,4 @@
-function utf8Len(str)
+local function utf8Len(str)
     local len = 0
     for _ in string.gmatch(str, "[%z\1-\127\194-\244][\128-\191]*") do
         len = len + 1
@@ -6,7 +6,7 @@ function utf8Len(str)
     return len
 end
 
-function utf8Sub(str, startChar, numChars)
+local function utf8Sub(str, startChar, numChars)
     local result = ""
     local currentIndex = 1
     for _, char in utf8.codes(str) do
@@ -18,8 +18,7 @@ function utf8Sub(str, startChar, numChars)
     return result
 end
 
--- 문자열을 30자 이상이면 축약하는 함수
-function truncateString(str, maxLength)
+local function truncateString(str, maxLength)
     maxLength = maxLength or 30
     local strLength = utf8Len(str)
 
@@ -30,10 +29,17 @@ function truncateString(str, maxLength)
     end
 end
 
-function repeatStr(str, length)
+local function repeatStr(str, length)
     result = ''
     for i = 1, length do
         result = result .. str
     end
     return result
 end
+
+return {
+    utf8Len = utf8Len,
+    utf8Sub = utf8Sub,
+    truncateString = truncateString,
+    repeatStr = repeatStr,
+}

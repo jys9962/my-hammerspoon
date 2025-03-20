@@ -1,37 +1,58 @@
-windowData = {
-    apps = {},
-    watcher = nil,
-}
+local Fp = require('libs.util.Fp')
+local Arr = require('libs.util.ArrayUtil')
 
-local function getWindowList(app)
-    local appName = app:name()
-    local byApp = app:allWindows()
-    local byStorage = windowData.apps[appName]
+local _window_map = {}
 
-    local result = {}
-    for _, t in ipairs(byStorage) do
-        for _, j in ipairs(byApp) do
-            if j:id() == t:id() then
-                table.insert(result, j)
-                break
-            end
-        end
+local function getWindowList(app, oldList)
+    local listByApi = app:allWindows()
+
+    return Fp.pipe(
+            oldList,
+
+    -- 종료된 window 제거
+            Fp.filter(function(t)
+                return Arr.some(
+                        listByApi,
+                        function(k)
+                            return t:id() == k:id()
+                        end
+                )
+            end),
+
+    -- 신규 window 추가
+            Fp.concat(
+                    Fp.pipe(
+                            listByApi,
+                            Fp.filter(function(t)
+                                return Arr.every(oldList, function(k)
+                                    return t:id() ~= k:id()
+                                end)
+                            end)
+                    )
+            ),
+
+    -- 유효한 창만 필터링
+            Fp.filter(function(t)
+                return t:isMaximizable()
+            end)
+    )
+
+end
+
+local function watchApp(appName)
+    if _window_map[appName] then
+        return ;
     end
 
-    for _, t in ipairs(byApp) do
-        local has = false
-        for _, j in ipairs(windowData.apps[app:name()]) do
-            if j:id() == t:id() then
-                has = true
-                break
-            end
-        end
-        if not has then
-            table.insert(result, t)
-        end
+    local wf = hs.window.filter.new(appName)
+
+    local function refresh(win)
+        local app = win:application()
+        _window_map[appName] = getWindowList(app, _window_map[appName] or {})
     end
 
-    return result
+    wf:subscribe(hs.window.filter.windowCreated, refresh)
+    wf:subscribe(hs.window.filter.windowDestroyed, refresh)
 end
 
 local function getList(appName)
@@ -40,30 +61,11 @@ local function getList(appName)
         return {}
     end
 
-    local currentWindows = app:allWindows()
-    if not windowData.apps[appName] then
-        windowData.apps[appName] = currentWindows
-        return currentWindows
-    end
-
-    windowData.apps[appName] = getWindowList(app)
-
-    return windowData.apps[appName]
+    _window_map[appName] = getWindowList(app, _window_map[appName] or {})
+    return _window_map[appName]
 end
-
-local function init()
-    windowData.watcher = hs.application.watcher.new(function(appName, eventType, app)
-        if not windowData.apps[appName] then
-            return
-        end
-
-        windowData.apps[appName] = getWindowList(app)
-    end)
-    windowData.watcher:start()
-end
-
-init()
 
 return {
+    watch = watchApp,
     getList = getList
 }

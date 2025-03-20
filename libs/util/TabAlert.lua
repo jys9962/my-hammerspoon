@@ -1,5 +1,5 @@
-local watcher = require('libs/util/EventWatcher')
-require('libs/util/StringUtil')
+local watcher = require('libs.util.EventWatcher')
+local Str = require('libs.util.StringUtil')
 
 local data = {
     tabName = nil,
@@ -31,10 +31,10 @@ local function getMessage()
     local result = '_______________________________________________________________\n\n'
     if title ~= nil then
         local fullLength = 120
-        local titleSize = utf8Len(title)
+        local titleSize = Str.utf8Len(title)
         local leftPad = (fullLength - titleSize) // 2
         local rightPad = fullLength - titleSize - leftPad
-        result = result .. repeatStr(' ', leftPad) .. data.title .. repeatStr(' ', rightPad) .. '\n'
+        result = result .. Str.repeatStr(' ', leftPad) .. data.title .. Str.repeatStr(' ', rightPad) .. '\n'
     end
     for index, value in ipairs(windowList) do
         if index == selectedIndex then
@@ -44,8 +44,7 @@ local function getMessage()
         end
 
         local title = value:title()
-        --local indexedAppName = appName .. ' - (' .. index .. ')'
-        result = result .. truncateString(title, 50) -- result .. truncateString(title ~= '' and title or indexedAppName, 50)
+        result = result .. Str.truncateString(title, 50)
     end
 
     result = result .. '\n\n_______________________________________________________________\n'
@@ -78,10 +77,10 @@ local function getMessage()
     local result = '----------------------------------------------------------------\n'
     if title ~= nil then
         local fullLength = 90
-        local titleSize = utf8Len(title)
+        local titleSize = Str.utf8Len(title)
         local leftPad = (fullLength - titleSize) // 2
         local rightPad = fullLength - titleSize - leftPad
-        result = result .. repeatStr(' ', leftPad) .. data.title .. repeatStr(' ', rightPad) .. '\n'
+        result = result .. Str.repeatStr(' ', leftPad) .. data.title .. Str.repeatStr(' ', rightPad) .. '\n'
     end
     for index, value in ipairs(windowList) do
         if index == selectedIndex then
@@ -91,8 +90,7 @@ local function getMessage()
         end
 
         local title = value:title()
-        --local indexedAppName = appName .. ' - (' .. index .. ')'
-        result = result .. truncateString(title, 50) -- result .. truncateString(title ~= '' and title or indexedAppName, 50)
+        result = result .. Str.truncateString(title, 50)
     end
 
     result = result .. '\n\n----------------------------------------------------------------'
