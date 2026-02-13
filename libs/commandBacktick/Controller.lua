@@ -42,8 +42,8 @@ local function initOrNext()
     local currentIndex = Arr.findIndex(windowList, function(aWindow, i)
         return aWindow:id() == currentWindow:id()
     end)
-    tabAlert.startTab(tabName, title, windowList, currentIndex)
-    tabAlert.nextTab()
+    tabAlert.startTab(tabName, title, windowList, 1)
+    --tabAlert.nextTab()
 end
 
 local function initOrBefore()
@@ -70,8 +70,8 @@ local function initOrBefore()
         return aWindow:id() == currentWindow:id()
     end)
 
-    tabAlert.startTab(tabName, title, windowList, currentIndex)
-    tabAlert.beforeTab()
+    tabAlert.startTab(tabName, title, windowList, 1)
+    --tabAlert.beforeTab()
 end
 
 return {
