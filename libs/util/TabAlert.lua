@@ -59,7 +59,7 @@ local function showAlert()
                 return t1:frame().x > t2:frame().x;
             end),
             Fp.tap(function(t)
-                print(t:frame().x)
+                --print(t:frame().x)
             end)
     )[2]
 

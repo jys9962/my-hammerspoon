@@ -19,8 +19,11 @@ end
 function initOptionKey()
     local OptionKey = require('libs.optionKey.index')
 
-    --OptionKey.register('1', 'PhpStorm', 'PhpStorm.app')
-    OptionKey.register('1', 'PyCharm', 'PyCharm.app')
+    OptionKey.register('1', {
+        { appName = 'PyCharm', launchName = 'PyCharm.app' },
+        { appName = 'PhpStorm', launchName = 'PhpStorm.app' },
+    })
+
     OptionKey.register('2', 'NAVER Whale', 'Whale.app')
     OptionKey.register('3', 'DataGrip', 'DataGrip.app')
     OptionKey.register('4', 'iTerm2', 'iTerm.app')
@@ -29,15 +32,20 @@ function initOptionKey()
     OptionKey.register('k', 'KakaoTalk', 'KakaoTalk.app')
     OptionKey.register('`', 'Finder')
     OptionKey.register('m', '메모', "notes.app")
-    OptionKey.register('8', 'Docker Desktop')
     OptionKey.register('9', 'Code', 'Visual Studio Code.app')
     OptionKey.register('g', 'Claude', 'Claude.app')
 
+    OptionKey.registerHyper('d', 'Docker Desktop')
     OptionKey.registerHyper('p', 'Postman', 'Postman.app')
     OptionKey.registerHyper('y', 'PyCharm', 'PyCharm.app')
     OptionKey.registerHyper('h', 'PhpStorm', 'PhpStorm.app')
     OptionKey.registerHyper('c', '캘린더', 'Calendar.app')
     OptionKey.registerHyper('t', 'ChatGPT', 'ChatGPT.app')
+    OptionKey.registerHyper('a', 'Air', 'Air.app')
+    OptionKey.registerHyper('x', 'Codex', 'Codex.app')
+    OptionKey.registerHyper('s', 'Codex Switcher', 'Codex Switcher.app')
+    OptionKey.registerHyper('i', 'Gemini', 'Gemini.app')
+    OptionKey.registerHyper('a', 'Antigravity', 'Antigravity.app')
 end
 
 function initCloseWindow()

@@ -12,7 +12,7 @@ local function getWindowList(app, oldList)
             oldList,
 
             Fp.tap(function(t)
-                print(t);
+                --print(t);
             end),
 
     -- 종료된 window 제거

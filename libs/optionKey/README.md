@@ -9,3 +9,13 @@ local OptionKey = require('libs.optionKey.index')
 OptionKey.register('1', 'RustRover')
 OptionKey.register('2', 'NAVER Whale', 'Whale.app')
 ```
+
+두 번째 파라미터에 앱 배열을 넣으면 `Hyper+key`는 선택된 앱을 실행하고,
+`Hyper+shift+key`는 실행할 앱을 고르는 팝업을 띄웁니다. 저장된 선택이 없으면 첫 번째 앱이 기본값입니다.
+
+```
+OptionKey.register('1', {
+    { appName = 'PyCharm', launchName = 'PyCharm.app' },
+    { appName = 'PhpStorm', launchName = 'PhpStorm.app' },
+})
+```
