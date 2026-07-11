@@ -1,34 +1,30 @@
 local tabAlert = require('libs.util.TabAlert')
 local windows = require('libs.util.Window')
 
-local function getTabName(appName)
-    return 'winKey-' .. appName
+local function getTabName(bundleID)
+    return 'winKey-' .. bundleID
 end
 
-local function getSortedWindows(name)
-    return windows.getList(name)
-end
-
-local function initOrNext(appName, launchName)
-    local tabName = getTabName(appName)
+local function initOrNext(bundleID)
+    local tabName = getTabName(bundleID)
     local currentTabName = tabAlert.getTabName()
     if tabName == currentTabName then
         tabAlert.nextTab()
         return ;
     end
 
-    local windowList = getSortedWindows(appName)
+    local windowList = windows.getList(bundleID)
     if windowList == nil or #windowList == 0 then
-        hs.application.launchOrFocus(launchName or appName)
+        hs.application.launchOrFocusByBundleID(bundleID)
         return ;
     end
 
-    local title = appName
+    local title = hs.application.nameForBundleID(bundleID) or bundleID
     tabAlert.startTab(tabName, title, windowList, 1)
 end
 
-local function before(appName)
-    local tabName = getTabName(appName)
+local function before(bundleID)
+    local tabName = getTabName(bundleID)
     local currentTabName = tabAlert.getTabName()
 
     if (tabName ~= currentTabName) then
