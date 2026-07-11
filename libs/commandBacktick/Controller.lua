@@ -53,20 +53,21 @@ local function initOrBefore()
         return nil;
     end
 
-    local appName = currentWindow:application():name()
-    if appName == nil then
+    local app = currentWindow:application()
+    local bundleID = app:bundleID()
+    if bundleID == nil then
         return ;
     end
 
-    local tabName = getTabName(appName)
+    local tabName = getTabName(bundleID)
     local currentTabName = tabAlert.getTabName()
     if tabName == currentTabName then
         tabAlert.beforeTab()
         return ;
     end
 
-    local windowList = getSortedWindows(appName)
-    local title = '[[' .. appName .. ']]'
+    local windowList = getSortedWindows(bundleID)
+    local title = '[[' .. (app:name() or bundleID) .. ']]'
     local currentIndex = Arr.findIndex(windowList, function(aWindow, i)
         return aWindow:id() == currentWindow:id()
     end)
