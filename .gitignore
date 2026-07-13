@@ -1,0 +1,20 @@
+# 개인 설정 (init.example.lua를 복사해서 사용)
+init.lua
+
+# JetBrains IDE
+.idea/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+
+# Hammerspoon Spoons (외부에서 받아 설치하는 플러그인)
+Spoons/
+
+# 편집기 임시 파일
+*.swp
+*.swo
+*~

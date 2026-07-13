@@ -1,3 +1,8 @@
+-- 예제 설정 파일입니다.
+-- 이 파일을 init.lua 로 복사한 뒤 본인 환경에 맞게 앱 목록을 수정하세요.
+--   cp init.example.lua init.lua
+-- init.lua 는 개인 설정이므로 .gitignore 에 등록되어 커밋되지 않습니다.
+
 function initForHammerspoonConsole()
     hs.alert.show('init')
     hs.console.clearConsole()
@@ -11,7 +16,9 @@ function initForHammerspoonConsole()
           :focus()
     end)
     hs.hotkey.bind({ 'option', 'cmd' }, 'i', function()
-        print('currentAppName: ' .. hs.window.focusedWindow():application():name())
+        local app = hs.window.focusedWindow():application()
+        print('currentAppName: ' .. app:name())
+        print('currentBundleID: ' .. (app:bundleID() or 'nil'))
         print('currentWindowName: ' .. hs.window.focusedWindow():title())
     end)
 end
@@ -19,33 +26,21 @@ end
 function initOptionKey()
     local OptionKey = require('libs.optionKey.index')
 
+    -- 전부 bundleID 기반. bundleID는 대상 앱을 포커스한 상태에서
+    -- option+cmd+i 를 눌러 콘솔에서 확인할 수 있다.
+    -- 아래는 예시이므로 본인이 사용하는 앱으로 바꿔 등록하세요.
     OptionKey.register('1', {
-        { appName = 'PyCharm', launchName = 'PyCharm.app' },
-        { appName = 'PhpStorm', launchName = 'PhpStorm.app' },
+        'com.jetbrains.pycharm',   -- PyCharm
+        'com.jetbrains.PhpStorm',  -- PhpStorm
     })
 
-    OptionKey.register('2', 'NAVER Whale', 'Whale.app')
-    OptionKey.register('3', 'DataGrip', 'DataGrip.app')
-    OptionKey.register('4', 'iTerm2', 'iTerm.app')
-    OptionKey.register('5', 'Slack', 'Slack.app')
-    OptionKey.register('6', 'Notion', 'Notion.app')
-    OptionKey.register('k', 'KakaoTalk', 'KakaoTalk.app')
-    OptionKey.register('`', 'Finder')
-    OptionKey.register('m', '메모', "notes.app")
-    OptionKey.register('9', 'Code', 'Visual Studio Code.app')
-    OptionKey.register('g', 'Claude', 'Claude.app')
+    OptionKey.register('2', 'com.naver.Whale')                -- NAVER Whale
+    OptionKey.register('4', 'com.googlecode.iterm2')          -- iTerm2
+    OptionKey.register('5', 'com.tinyspeck.slackmacgap')      -- Slack
+    OptionKey.register('`', 'com.apple.finder')               -- Finder
 
-    OptionKey.registerHyper('d', 'Docker Desktop')
-    OptionKey.registerHyper('p', 'Postman', 'Postman.app')
-    OptionKey.registerHyper('y', 'PyCharm', 'PyCharm.app')
-    OptionKey.registerHyper('h', 'PhpStorm', 'PhpStorm.app')
-    OptionKey.registerHyper('c', '캘린더', 'Calendar.app')
-    OptionKey.registerHyper('t', 'ChatGPT', 'ChatGPT.app')
-    OptionKey.registerHyper('a', 'Air', 'Air.app')
-    OptionKey.registerHyper('x', 'Codex', 'Codex.app')
-    OptionKey.registerHyper('s', 'Codex Switcher', 'Codex Switcher.app')
-    OptionKey.registerHyper('i', 'Gemini', 'Gemini.app')
-    OptionKey.registerHyper('a', 'Antigravity', 'Antigravity.app')
+    OptionKey.registerHyper('c', 'com.apple.iCal')            -- 캘린더
+    OptionKey.registerHyper('f', 'com.figma.Desktop')         -- Figma
 end
 
 function initCloseWindow()
@@ -61,6 +56,9 @@ end
 
 local CommandBacktick = require('libs.commandBacktick.index')
 CommandBacktick.init()
+
+local WindowReorder = require('libs.windowReorder.index')
+WindowReorder.init()
 
 function initMoveWindow()
     local function move_win(xx, yy, ww, hh)
@@ -92,32 +90,18 @@ function initMoveWindow()
         win:moveOneScreenSouth(false, true, 0.05)
     end
 
-    --hs.hotkey.bind({ 'option', 'cmd', 'ctrl' }, 'left', move_win(0, 0, 1 / 2, 1))
-    --hs.hotkey.bind({ 'option', 'cmd', 'ctrl' }, 'right', move_win(1 / 2, 0, 1 / 2, 1))
-    --hs.hotkey.bind({ 'option', 'cmd', 'ctrl' }, 'up', move_win(0, 0, 1, 1 / 2))
-    --hs.hotkey.bind({ 'option', 'cmd', 'ctrl' }, 'down', move_win(0, 1 / 2, 1, 1 / 2))
+    hs.hotkey.bind({ 'option', 'cmd', 'ctrl', 'shift' }, 'left', move_win(0, 0, 1 / 2, 1))
+    hs.hotkey.bind({ 'option', 'cmd', 'ctrl', 'shift' }, 'right', move_win(1 / 2, 0, 1 / 2, 1))
+    hs.hotkey.bind({ 'option', 'cmd', 'ctrl', 'shift' }, 'up', move_win(0, 0, 1, 1 / 2))
+    hs.hotkey.bind({ 'option', 'cmd', 'ctrl', 'shift' }, 'down', move_win(0, 1 / 2, 1, 1 / 2))
     hs.hotkey.bind({ 'option', 'cmd', 'ctrl' }, 'left', win_to_left)
     hs.hotkey.bind({ 'option', 'cmd', 'ctrl' }, 'right', win_to_right)
     hs.hotkey.bind({ 'option', 'cmd', 'ctrl' }, 'up', move_win(0, 0, 1, 1))
     hs.hotkey.bind({ 'option', 'cmd', 'ctrl' }, 'down', move_win(1 / 7, 1 / 7, 5 / 7, 5 / 7))
     hs.hotkey.bind({ 'option', 'cmd', 'ctrl' }, 'return', move_win(0, 0, 1, 1))
-    --hs.hotkey.bind({ 'option', 'cmd', 'ctrl' }, 'return', move_win(0, 0, 1, 1))
-end
-
-function initLangToggle()
-    local inputEnglish = "com.apple.keylayout.ABC"
-    local inputKorean = "com.apple.inputmethod.Korean.2SetKorean"
-
-    hs.hotkey.bind({ 'option', 'cmd', 'ctrl' }, '[', function()
-        hs.keycodes.currentSourceID(inputEnglish)
-    end)
-    hs.hotkey.bind({ 'option', 'cmd', 'ctrl' }, ']', function()
-        hs.keycodes.currentSourceID(inputKorean)
-    end)
 end
 
 initForHammerspoonConsole()
 initOptionKey()
 initCloseWindow()
 initMoveWindow()
-initLangToggle()
