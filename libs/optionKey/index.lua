@@ -1,31 +1,31 @@
 local controller = require('libs.optionKey.Controller')
 
-local function registerHyper(key, appName, launchName)
+local function registerHyper(key, app)
     local function initOrNext()
-        controller.initOrNext(key, appName, launchName)
+        controller.initOrNext(key, app)
     end
 
     hs.hotkey.bind({ 'option', 'cmd', 'ctrl' }, key, initOrNext, nil, initOrNext)
 
-    if controller.isAppList(appName) then
+    if controller.isAppList(app) then
         hs.hotkey.bind({ 'option', 'cmd', 'ctrl', 'shift' }, key, function()
-            controller.chooseApp(key, appName)
+            controller.chooseApp(key, app)
         end)
     end
 end
 
-local function register(key, appName, launchName)
+local function register(key, app)
     local function initOrNext()
-        controller.initOrNext(key, appName, launchName)
+        controller.initOrNext(key, app)
     end
 
     local function before()
-        controller.before(key, appName, launchName)
+        controller.before(key, app)
     end
 
     hs.hotkey.bind({ 'option' }, key, initOrNext, nil, initOrNext)
     hs.hotkey.bind({ 'option', 'shift' }, key, before, nil, before)
-    registerHyper(key, appName, launchName)
+    registerHyper(key, app)
 end
 
 return {

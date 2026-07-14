@@ -1,22 +1,12 @@
 local tabAlert = require('libs.util.TabAlert')
 local windows = require('libs.util.Window')
-local Arr = require('libs.util.ArrayUtil')
 
-local function getTabName(appName)
-    return 'winKey-' .. appName
+local function getTabName(bundleID)
+    return 'winKey-' .. bundleID
 end
 
-local function getSortedWindows(name)
-    return windows.getList(name)
-end
-
-local function getCurrentAppName()
-    local theWindow = hs.window.focusedWindow()
-    if (theWindow == nil) then
-        return nil;
-    end
-
-    return theWindow:application():name()
+local function getSortedWindows(bundleID)
+    return windows.getList(bundleID)
 end
 
 local function initOrNext()
@@ -25,25 +15,22 @@ local function initOrNext()
         return nil;
     end
 
-    local appName = currentWindow:application():name()
-    if appName == nil then
+    local app = currentWindow:application()
+    local bundleID = app:bundleID()
+    if bundleID == nil then
         return ;
     end
 
-    local tabName = getTabName(appName)
+    local tabName = getTabName(bundleID)
     local currentTabName = tabAlert.getTabName()
     if tabName == currentTabName then
         tabAlert.nextTab()
         return ;
     end
 
-    local windowList = getSortedWindows(appName)
-    local title = '[[' .. appName .. ']]'
-    local currentIndex = Arr.findIndex(windowList, function(aWindow, i)
-        return aWindow:id() == currentWindow:id()
-    end)
+    local windowList = getSortedWindows(bundleID)
+    local title = '[[' .. (app:name() or bundleID) .. ']]'
     tabAlert.startTab(tabName, title, windowList, 1)
-    --tabAlert.nextTab()
 end
 
 local function initOrBefore()
@@ -52,26 +39,22 @@ local function initOrBefore()
         return nil;
     end
 
-    local appName = currentWindow:application():name()
-    if appName == nil then
+    local app = currentWindow:application()
+    local bundleID = app:bundleID()
+    if bundleID == nil then
         return ;
     end
 
-    local tabName = getTabName(appName)
+    local tabName = getTabName(bundleID)
     local currentTabName = tabAlert.getTabName()
     if tabName == currentTabName then
         tabAlert.beforeTab()
         return ;
     end
 
-    local windowList = getSortedWindows(appName)
-    local title = '[[' .. appName .. ']]'
-    local currentIndex = Arr.findIndex(windowList, function(aWindow, i)
-        return aWindow:id() == currentWindow:id()
-    end)
-
+    local windowList = getSortedWindows(bundleID)
+    local title = '[[' .. (app:name() or bundleID) .. ']]'
     tabAlert.startTab(tabName, title, windowList, 1)
-    --tabAlert.beforeTab()
 end
 
 return {

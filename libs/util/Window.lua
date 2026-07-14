@@ -3,9 +3,7 @@ local Arr = require('libs.util.ArrayUtil')
 
 _window_map = {}
 
-local function getWindowList(app, oldList)
-    local listByApi = app:allWindows()
-
+local function getWindowList(listByApi, oldList)
     --local timestamp = os.time()
 
     return Fp.pipe(
@@ -46,16 +44,41 @@ local function getWindowList(app, oldList)
 
 end
 
-local function getList(appName)
-    local app = hs.application.find(appName, true)
-    if not app then
-        return {}
+-- 이름이 같은 다른 앱까지 정확히 구분하기 위해 bundleID로 조회한다.
+-- 같은 bundleID의 인스턴스가 여러 개여도 모든 window를 모은다.
+local function collectWindows(bundleID)
+    local list = {}
+    for _, app in ipairs(hs.application.applicationsForBundleID(bundleID) or {}) do
+        for _, w in ipairs(app:allWindows()) do
+            table.insert(list, w)
+        end
+    end
+    return list
+end
+
+local function getList(bundleID)
+    _window_map[bundleID] = getWindowList(collectWindows(bundleID), _window_map[bundleID] or {})
+    return _window_map[bundleID]
+end
+
+-- 캐시된 윈도우 목록에서 fromIndex 창을 toIndex 위치로 옮긴다.
+-- getList가 반환하는 배열과 동일 객체를 in-place 수정하므로 순서가 그대로 유지된다.
+local function reorder(bundleID, fromIndex, toIndex)
+    local list = _window_map[bundleID]
+    if list == nil then
+        return ;
     end
 
-    _window_map[appName] = getWindowList(app, _window_map[appName] or {})
-    return _window_map[appName]
+    local n = #list
+    if fromIndex < 1 or fromIndex > n or toIndex < 1 or toIndex > n then
+        return ;
+    end
+
+    local w = table.remove(list, fromIndex)
+    table.insert(list, toIndex, w)
 end
 
 return {
-    getList = getList
+    getList = getList,
+    reorder = reorder,
 }

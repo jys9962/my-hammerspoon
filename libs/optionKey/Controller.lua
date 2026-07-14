@@ -4,72 +4,52 @@ local windows = require('libs.util.Window')
 local settingKeyPrefix = 'optionKey.selectedApp.'
 local appChooser = nil
 
-local function getTabName(appName)
-    return 'winKey-' .. appName
+local function getTabName(bundleID)
+    return 'winKey-' .. bundleID
 end
 
-local function getSortedWindows(name)
-    return windows.getList(name)
-end
-
+-- app 인자는 단일 bundleID(string) 이거나 bundleID 목록(table)이다.
 local function isAppList(app)
-    return type(app) == 'table' and app[1] ~= nil
+    return type(app) == 'table'
 end
 
-local function normalizeApp(app, launchName)
-    if type(app) == 'string' then
-        return {
-            appName = app,
-            launchName = launchName
-        }
-    end
-
-    return {
-        appName = app.appName or app[1],
-        launchName = app.launchName or app[2] or app.appName or app[1]
-    }
-end
-
-local function getSelectedApp(key, app, launchName)
+local function getSelectedBundleID(key, app)
     if not isAppList(app) then
-        return normalizeApp(app, launchName)
+        return app
     end
 
-    local selectedAppName = hs.settings.get(settingKeyPrefix .. key)
-    for _, candidate in ipairs(app) do
-        local normalizedCandidate = normalizeApp(candidate)
-        if normalizedCandidate.appName == selectedAppName then
-            return normalizedCandidate
+    local selected = hs.settings.get(settingKeyPrefix .. key)
+    for _, bundleID in ipairs(app) do
+        if bundleID == selected then
+            return bundleID
         end
     end
 
-    return normalizeApp(app[1])
+    return app[1]
 end
 
-local function initOrNext(key, app, launchName)
-    local selectedApp = getSelectedApp(key, app, launchName)
-    local appName = selectedApp.appName
-    local tabName = getTabName(appName)
+local function initOrNext(key, app)
+    local bundleID = getSelectedBundleID(key, app)
+    local tabName = getTabName(bundleID)
     local currentTabName = tabAlert.getTabName()
     if tabName == currentTabName then
         tabAlert.nextTab()
         return ;
     end
 
-    local windowList = getSortedWindows(appName)
+    local windowList = windows.getList(bundleID)
     if windowList == nil or #windowList == 0 then
-        hs.application.launchOrFocus(selectedApp.launchName or appName)
+        hs.application.launchOrFocusByBundleID(bundleID)
         return ;
     end
 
-    local title = appName
+    local title = hs.application.nameForBundleID(bundleID) or bundleID
     tabAlert.startTab(tabName, title, windowList, 1)
 end
 
-local function before(key, app, launchName)
-    local selectedApp = getSelectedApp(key, app, launchName)
-    local appName = selectedApp.appName
-    local tabName = getTabName(appName)
+local function before(key, app)
+    local bundleID = getSelectedBundleID(key, app)
+    local tabName = getTabName(bundleID)
     local currentTabName = tabAlert.getTabName()
 
     if (tabName ~= currentTabName) then
@@ -89,23 +69,22 @@ local function chooseApp(key, app)
             return ;
         end
 
-        hs.settings.set(settingKeyPrefix .. key, choice.appName)
-        hs.alert.show('Hyper+' .. key .. ': ' .. choice.appName)
+        hs.settings.set(settingKeyPrefix .. key, choice.bundleID)
+        hs.alert.show('Hyper+' .. key .. ': ' .. choice.text)
     end)
 
     local choices = {}
-    local selectedApp = getSelectedApp(key, app)
-    for _, candidate in ipairs(app) do
-        local normalizedCandidate = normalizeApp(candidate)
-        local text = normalizedCandidate.appName
-        if normalizedCandidate.appName == selectedApp.appName then
+    local selected = getSelectedBundleID(key, app)
+    for _, bundleID in ipairs(app) do
+        local text = hs.application.nameForBundleID(bundleID) or bundleID
+        if bundleID == selected then
             text = text .. ' [selected]'
         end
 
         table.insert(choices, {
             text = text,
-            subText = normalizedCandidate.launchName,
-            appName = normalizedCandidate.appName
+            subText = bundleID,
+            bundleID = bundleID
         })
     end
 
