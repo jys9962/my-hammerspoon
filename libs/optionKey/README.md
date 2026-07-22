@@ -11,7 +11,8 @@ OptionKey.register('2', 'com.naver.Whale')
 ```
 
 두 번째 파라미터에 bundleID 배열을 넣으면 `Hyper+key`는 선택된 앱을 실행하고,
-`Hyper+shift+key`는 실행할 앱을 고르는 팝업을 띄웁니다. 저장된 선택이 없으면 첫 번째 앱이 기본값입니다.
+`Hyper+shift+key`는 실행할 앱을 고르는 alert를 띄웁니다. 키를 누른 채 같은 키를 반복하면
+다음 앱으로 이동하고, 모든 modifier를 놓는 순간 선택이 저장됩니다. alert의 선택은 항상 목록의 첫 번째 앱에서 시작합니다.
 
 ```
 OptionKey.register('1', {

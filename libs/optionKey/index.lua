@@ -8,9 +8,11 @@ local function registerHyper(key, app)
     hs.hotkey.bind({ 'option', 'cmd', 'ctrl' }, key, initOrNext, nil, initOrNext)
 
     if controller.isAppList(app) then
-        hs.hotkey.bind({ 'option', 'cmd', 'ctrl', 'shift' }, key, function()
+        local function chooseApp()
             controller.chooseApp(key, app)
-        end)
+        end
+
+        hs.hotkey.bind({ 'option', 'cmd', 'ctrl', 'shift' }, key, chooseApp, nil, chooseApp)
     end
 end
 

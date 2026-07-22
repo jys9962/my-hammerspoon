@@ -1,8 +1,8 @@
 local tabAlert = require('libs.util.TabAlert')
+local appAlert = require('libs.util.AppAlert')
 local windows = require('libs.util.Window')
 
 local settingKeyPrefix = 'optionKey.selectedApp.'
-local appChooser = nil
 
 local function getTabName(bundleID)
     return 'winKey-' .. bundleID
@@ -64,32 +64,15 @@ local function chooseApp(key, app)
         return ;
     end
 
-    appChooser = hs.chooser.new(function(choice)
-        if choice == nil then
-            return ;
-        end
-
-        hs.settings.set(settingKeyPrefix .. key, choice.bundleID)
-        hs.alert.show('Hyper+' .. key .. ': ' .. choice.text)
-    end)
-
-    local choices = {}
-    local selected = getSelectedBundleID(key, app)
-    for _, bundleID in ipairs(app) do
-        local text = hs.application.nameForBundleID(bundleID) or bundleID
-        if bundleID == selected then
-            text = text .. ' [selected]'
-        end
-
-        table.insert(choices, {
-            text = text,
-            subText = bundleID,
-            bundleID = bundleID
-        })
+    local selectionName = 'optionKey-app-' .. key
+    if appAlert.getSelectionName() == selectionName then
+        appAlert.nextSelection()
+        return ;
     end
 
-    appChooser:choices(choices)
-    appChooser:show()
+    appAlert.start(selectionName, app, 1, function(bundleID)
+        hs.settings.set(settingKeyPrefix .. key, bundleID)
+    end)
 end
 
 return {
