@@ -72,7 +72,7 @@ local function chooseApp(key, app)
 
     appAlert.start(selectionName, app, 1, function(bundleID)
         hs.settings.set(settingKeyPrefix .. key, bundleID)
-    end)
+    end, getSelectedBundleID(key, app))
 end
 
 return {

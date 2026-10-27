@@ -29,7 +29,7 @@ local function initOrNext()
     end
 
     local windowList = getSortedWindows(bundleID)
-    local title = '[[' .. (app:name() or bundleID) .. ']]'
+    local title = app:name() or bundleID
     tabAlert.startTab(tabName, title, windowList, 1)
 end
 
@@ -53,7 +53,7 @@ local function initOrBefore()
     end
 
     local windowList = getSortedWindows(bundleID)
-    local title = '[[' .. (app:name() or bundleID) .. ']]'
+    local title = app:name() or bundleID
     tabAlert.startTab(tabName, title, windowList, 1)
 end
 

@@ -1,5 +1,4 @@
 local watcher = require('libs.util.EventWatcher')
-local Str = require('libs.util.StringUtil')
 local Fp = require('libs.util.Fp')
 local ListPanel = require('libs.util.ListPanel')
 
@@ -37,17 +36,36 @@ local function getHeaderIcon()
     return bundleID and hs.image.imageFromAppBundle(bundleID) or nil
 end
 
+local function getSubtext(window, focused)
+    if window:isMinimized() then
+        return '최소화됨'
+    end
+    if focused ~= nil and window:id() == focused:id() then
+        return '현재'
+    end
+    return nil
+end
+
 local function showAlert()
+    local focused = hs.window.focusedWindow()
     ListPanel.show({
         title = data.title or '',
+        subtitle = '창 ' .. #data.windowList .. '개',
         icon = getHeaderIcon(),
         items = Fp.pipe(data.windowList, Fp.map(function(window)
             local title = window:title()
-            return { text = Str.truncateString(title ~= '' and title or '(제목 없음)', 60) }
+            return {
+                text = title ~= '' and title or '(제목 없음)',
+                subtext = getSubtext(window, focused),
+            }
         end)),
         selectedIndex = data.currentIndex,
-        hint = '↑↓ 이동  ·  ⇧↑↓ 순서 변경  ·  키를 놓으면 전환',
-        width = 460,
+        hints = {
+            { key = '↑↓', label = '이동' },
+            { key = '⇧↑↓', label = '순서 변경' },
+            { label = '키를 놓으면 전환' },
+        },
+        width = 520,
     })
 end
 
