@@ -24,8 +24,9 @@
 
 `optionKey`(앱별 단축키)와 `commandBacktick`(같은 앱 내 윈도우 순환)은 동일한 메커니즘을 공유합니다. 여러 파일이 맞물려 동작하므로 함께 이해해야 합니다:
 
-- **`libs/util/TabAlert.lua`** — 전환 UI의 **상태를 가진 싱글톤**. `data` 테이블에 현재 탭 이름·윈도우 목록·선택 인덱스를 보관합니다. `startTab`으로 오버레이를 띄우고, `nextTab`/`beforeTab`이 인덱스를 순환시키며 `hs.alert`로 후보 목록을 다시 그립니다. **선택은 즉시 확정되지 않습니다** — 화면에 표시만 됩니다.
+- **`libs/util/TabAlert.lua`** — 전환 UI의 **상태를 가진 싱글톤**. `data` 테이블에 현재 탭 이름·윈도우 목록·선택 인덱스를 보관합니다. `startTab`으로 오버레이를 띄우고, `nextTab`/`beforeTab`이 인덱스를 순환시키며 `ListPanel`로 후보 목록을 다시 그립니다. **선택은 즉시 확정되지 않습니다** — 화면에 표시만 됩니다.
 - **`libs/util/EventWatcher.lua`** — `flagsChanged` 이벤트를 감시해, **모든 모디파이어(alt/cmd/ctrl)가 떼어지는 순간** 등록된 콜백을 실행합니다. TabAlert는 여기에 콜백을 등록해, 사용자가 키를 놓으면 그때 `focusCurrentIndex()`로 선택된 윈도우에 실제 포커스를 주고 상태를 초기화합니다. → 이것이 "modifier 누른 채 숫자/백틱 연타 → 떼면 확정"이라는 OS 표준 앱 전환 UX의 구현 방식입니다.
+- **`libs/util/ListPanel.lua`** — `hs.canvas`로 그리는 목록 팝업(아이콘·선택 하이라이트·안내 문구). `TabAlert`와 `AppAlert`가 공유하며 canvas는 하나만 둡니다. 색·크기는 파일 상단 `style` 테이블에서 조정합니다.
 - **`libs/util/Window.lua`** — 앱별 윈도우 목록을 `_window_map`에 **캐싱**해 순서를 안정적으로 유지합니다. `getList` 호출마다 기존 목록에서 닫힌 창을 제거하고 새 창을 뒤에 추가하므로, 연타 시 윈도우 순서가 흔들리지 않습니다. `isMaximizable()`로 유효 창만 필터링합니다.
 
 즉 흐름은: Controller가 `Window.getList`로 후보를 얻어 `TabAlert.startTab` 호출 → 같은 단축키 재입력 시 `nextTab` → EventWatcher가 모디파이어 해제를 감지해 최종 포커스. 새로운 탭형 전환 기능을 만든다면 이 세 유틸을 그대로 재사용하세요.
@@ -36,6 +37,5 @@
 
 ## 주의사항
 
-- `TabAlert.lua`에는 `getMessage`가 두 번 정의되어 있으며, Lua 특성상 **뒤(L84)의 정의가 실제로 사용**됩니다. 메시지 포맷을 바꿀 때 위쪽 정의는 무시됩니다.
 - `init.lua`의 앱 등록 목록(`initOptionKey`)은 개인 환경에 맞춰진 하드코딩이며, 일부는 주석 처리되어 있습니다. 앱을 추가/변경할 때 `OptionKey.register(key, 앱이름, [실행파일명])` 형식을 따르고, App 이름으로 실행이 안 되는 경우에만 세 번째 인자(`*.app`)를 줍니다.
 - 키 바인딩은 `option` 단독, `option+shift`(역방향), `option+cmd+ctrl`(Hyper) 조합을 사용합니다. 신규 단축키 추가 시 기존 바인딩과 충돌하지 않는지 `init.lua` 전체를 확인하세요.

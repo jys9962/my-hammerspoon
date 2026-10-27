@@ -1,6 +1,7 @@
 local watcher = require('libs.util.EventWatcher')
 local Str = require('libs.util.StringUtil')
 local Fp = require('libs.util.Fp')
+local ListPanel = require('libs.util.ListPanel')
 
 local data = {
     tabName = nil,
@@ -29,89 +30,25 @@ local function getTabName()
     return data.tabName
 end
 
-local function getMessage()
-    title = data.title
-    windowList = data.windowList
-    selectedIndex = data.currentIndex
-
-    local result = '_______________________________________________________________\n\n'
-    if title ~= nil then
-        local fullLength = 120
-        local titleSize = Str.utf8Len(title)
-        local leftPad = (fullLength - titleSize) // 2
-        local rightPad = fullLength - titleSize - leftPad
-        result = result .. Str.repeatStr(' ', leftPad) .. data.title .. Str.repeatStr(' ', rightPad) .. '\n'
-    end
-    for index, value in ipairs(windowList) do
-        if index == selectedIndex then
-            result = result .. '\n  ●  '
-        else
-            result = result .. '\n  ○  '
-        end
-
-        local title = value:title()
-        result = result .. Str.truncateString(title, 50)
-    end
-
-    result = result .. '\n\n_______________________________________________________________\n'
-    return result
+local function getHeaderIcon()
+    local first = data.windowList[1]
+    local app = first and first:application()
+    local bundleID = app and app:bundleID()
+    return bundleID and hs.image.imageFromAppBundle(bundleID) or nil
 end
 
 local function showAlert()
-    alertScreen = Fp.pipe(
-            hs.screen.allScreens(),
-            Fp.sort(function(t1, t2)
-                return t1:frame().x > t2:frame().x;
-            end),
-            Fp.tap(function(t)
-                --print(t:frame().x)
-            end)
-    )[2]
-
-    hs.alert.closeAll()
-    local message = getMessage()
-    hs.alert.show(message, {
-        strokeWidth = 0,
-        strokeColor = { red = 0.2, green = 0.4, blue = 0.6, alpha = 1 },
-        fillColor = { red = 0.12, green = 0.12, blue = 0.12, alpha = 1 },
-        textColor = { white = 1 },
-        textFont = ".AppleSystemUIFont",
-        textSize = 20,
-        radius = 12,
-
-        atScreenEdge = 0,
-        fadeInDuration = 0,
-        fadeOutDuration = 0,
-        padding = 0
-    }, alertScreen, 3600)
-end
-
-local function getMessage()
-    title = data.title
-    windowList = data.windowList
-    selectedIndex = data.currentIndex
-
-    local result = '----------------------------------------------------------------\n'
-    if title ~= nil then
-        local fullLength = 90
-        local titleSize = Str.utf8Len(title)
-        local leftPad = (fullLength - titleSize) // 2
-        local rightPad = fullLength - titleSize - leftPad
-        result = result .. Str.repeatStr(' ', leftPad) .. data.title .. Str.repeatStr(' ', rightPad) .. '\n'
-    end
-    for index, value in ipairs(windowList) do
-        if index == selectedIndex then
-            result = result .. '\n ●  '
-        else
-            result = result .. '\n ○  '
-        end
-
-        local title = value:title()
-        result = result .. Str.truncateString(title, 50)
-    end
-
-    result = result .. '\n\n----------------------------------------------------------------'
-    return result
+    ListPanel.show({
+        title = data.title or '',
+        icon = getHeaderIcon(),
+        items = Fp.pipe(data.windowList, Fp.map(function(window)
+            local title = window:title()
+            return { text = Str.truncateString(title ~= '' and title or '(제목 없음)', 60) }
+        end)),
+        selectedIndex = data.currentIndex,
+        hint = '↑↓ 이동  ·  ⇧↑↓ 순서 변경  ·  키를 놓으면 전환',
+        width = 460,
+    })
 end
 
 local function startTab(tabName, title, windowList, currentIndex)
@@ -172,11 +109,10 @@ watcher.listen(function()
     focusCurrentIndex()
     reorderModal:exit()
     init()
-    hs.alert.closeAll()
+    ListPanel.hide()
 end)
 
 return {
-    toMessage = getMessage,
     startTab = startTab,
     getTabName = getTabName,
     showAlert = showAlert,
